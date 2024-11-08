@@ -63,6 +63,76 @@ Level 16
 This is for the input bunny.png. I made this using [BVHVisualization](https://github.com/MircoWerner/BVHVisualization/), an OpenGL and imgui program that allows for easy viewing of generated BVHs.
 The images show the gradual segmentation of the bunny by the algorithm. At the early levels one can see the cube being split into two subcubes.
 
+### BVH Intersection Check
+
+So after we have this tree, how can we use it to make the ray tracer faster? The structure is used instead of iterating all triangles in a scene:
+
+```cpp
+// Before
+for (const auto& tri : scene.triangles)
+{
+	float t = triangle_get_collision(scene.vertex_data, tri.indices, ray);
+	if (t_min > t)
+	{
+		t_min = t;
+		obj.type = COLLISION_OBJECT_TRI;
+		obj.data.tri = &tri;
+	}
+}
+```
+
+```cpp
+// After
+const auto [t, tri] = bvh_get_collision(scene, scene.bvh, ray);
+if (t_min > t)
+{
+	t_min = t;
+	obj.type = COLLISION_OBJECT_TRI;
+	obj.data.tri = tri;
+}
+
+// The new function iterating the BVH structure
+std::pair<float, const Triangle *> bvh_get_collision(const Scene &scene, const BVHNode *node, const Ray &ray)
+{
+	const Triangle *ret = nullptr;
+
+	// This is the speedy part, if the ray does not intersect the bounding box
+	// we can skip checking potentially millions of triangles at once
+	if (node == nullptr || !aabb_get_collision(ray, node))
+		return std::pair<float, Triangle *>(INFINITY, NULL); 
+
+	// Otherwise we check if we can go into deeper nodes
+	if (node->tri_count > 0)
+	{
+		// We can't, iterate through all triangles in this node (in the cube)
+		float tmin = INFINITY;
+		for (int i = node->tri_start; i < node->tri_start + node->tri_count; i++)
+		{
+			const Triangle &tri = scene.triangles[i];
+			float cur_result = triangle_get_collision(scene.vertex_data, tri, ray);
+			if (cur_result < tmin)
+			{
+				// std::cout << "BVHcol " << cur_result << " " << tri.v0_id << std::endl;
+				tmin = cur_result;
+				ret = &scene.triangles[i];
+			}
+		}
+		return std::pair<float, const Triangle *>(tmin, ret);
+	}
+	else
+	{
+		// We can, do it
+		auto left_res = bvh_get_collision(scene, node->left, ray);
+		auto right_res = bvh_get_collision(scene, node->right, ray);
+		if (left_res.first < right_res.first)
+			return left_res;
+		else
+			return right_res;
+	}
+}
+```
+
+
 ```xml
 <NearPlane>-1 1 -1 1 20</NearPlane> // broken in spheres_mirror.xml
 ```
