@@ -47,15 +47,20 @@ BVHNode *setup_node(Scene &scene, int tri_start, int tri_count)
 }
 ```
 
-Four pictures are worth four thousand words:
-<div style="display: flex; flex-wrap: wrap; justify-content: center;">
-    <img src="https://github.com/user-attachments/assets/1d475466-a588-4413-b2af-ceaaf2594404" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-09">
-    <img src="https://github.com/user-attachments/assets/6522acea-bbf1-45f9-b173-8d4ef2c2d389" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-11">
-    <img src="https://github.com/user-attachments/assets/abad6bc1-028d-4575-8621-3d228bb0af0e" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-13">
-    <img src="https://github.com/user-attachments/assets/d3fd25cd-9137-4212-b640-04047c4b84a6" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-18">
-</div>
-
+Five pictures are worth five thousand words:
+<img src="https://github.com/user-attachments/assets/1d475466-a588-4413-b2af-ceaaf2594404" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-09">
+Level 0
+<img src="https://github.com/user-attachments/assets/6522acea-bbf1-45f9-b173-8d4ef2c2d389" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-11">
+Level 1
+<img src="https://github.com/user-attachments/assets/abad6bc1-028d-4575-8621-3d228bb0af0e" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-13">
+Level 2
+<img src="https://github.com/user-attachments/assets/d3fd25cd-9137-4212-b640-04047c4b84a6" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-18">
+Level 8
 <img src="https://github.com/user-attachments/assets/14c31d86-a9ba-439c-a82f-5d87e19f13ee" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-21">
+Level 16
+
+This is for the input bunny.png. I made this using [BVHVisualization](https://github.com/MircoWerner/BVHVisualization/), an OpenGL and imgui program that allows for easy viewing of generated BVHs.
+The images show the gradual segmentation of the bunny by the algorithm. At the early levels one can see the cube being split into two subcubes.
 
 ```xml
 <NearPlane>-1 1 -1 1 20</NearPlane> // broken in spheres_mirror.xml
