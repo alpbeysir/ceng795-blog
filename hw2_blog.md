@@ -217,7 +217,9 @@ norm = glm::mat3(inv_transpose) * local_norm;
 
 The calculated value norm can finally be used for shading.
 
+# Gallery
 
-```xml
-<NearPlane>-1 1 -1 1 20</NearPlane> // broken in spheres_mirror.xml
-```
+<img src="https://github.com/user-attachments/assets/06a5954f-45ac-4e0f-9c03-17f35a162008" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/ae404fa0-0fe5-489d-bdec-b9681238b848" width="50%" height="50%">
+![Uploading trex_smooth.png…]()
+
