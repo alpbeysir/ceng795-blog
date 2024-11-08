@@ -47,10 +47,13 @@ BVHNode *setup_node(Scene &scene, int tri_start, int tri_count)
 }
 ```
 
-Two pictures are worth two thousand words:
+Four pictures are worth four thousand words:
 
-
-<p align=center> <img src="https://github.com/user-attachments/assets/a5eb37be-2b6d-4108-8b68-edf1cace5595" width=50% height=50%> </p>
+<img src="https://github.com/user-attachments/assets/1d475466-a588-4413-b2af-ceaaf2594404" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-09">
+<img src="https://github.com/user-attachments/assets/6522acea-bbf1-45f9-b173-8d4ef2c2d389" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-11">
+<img src="https://github.com/user-attachments/assets/abad6bc1-028d-4575-8621-3d228bb0af0e" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-13">
+<img src="https://github.com/user-attachments/assets/d3fd25cd-9137-4212-b640-04047c4b84a6" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-18">
+<img src="https://github.com/user-attachments/assets/14c31d86-a9ba-439c-a82f-5d87e19f13ee" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-21">
 
 ```xml
 <NearPlane>-1 1 -1 1 20</NearPlane> // broken in spheres_mirror.xml
