@@ -221,5 +221,13 @@ The calculated value norm can finally be used for shading.
 
 <img src="https://github.com/user-attachments/assets/06a5954f-45ac-4e0f-9c03-17f35a162008" width="50%" height="50%">
 <img src="https://github.com/user-attachments/assets/ae404fa0-0fe5-489d-bdec-b9681238b848" width="50%" height="50%">
-![Uploading trex_smooth.png…]()
+<img src="https://github.com/user-attachments/assets/70f8357f-660a-400d-b327-2d0b5c8705cf" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/4a890d73-d1f9-4a03-a9d8-523eefae2fe7" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/e4bbfa9c-233d-4770-a987-9dadfcf65586" width="50%" height="50%">
 
+# Some Issues
+
+I noticed two issues with my ray tracer which I hope to remedy by the next homework.
+
+1. High poly meshes have small black 'dead pixels'.
+2. The camera is distorted in some inputs. Weird.
