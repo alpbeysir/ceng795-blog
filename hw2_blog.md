@@ -150,6 +150,8 @@ This achieved a moderate speedup for big scenes.
 
 ## Instanced Rendering & Transformations
 
+### Loading & Processing
+
 Implementing this was not an algorithmic challenge, more a software enginnering one. A huge part of the code had to be refactored to accomodate this feature.
 Instancing is basically the input file saying: "I want another copy of this mesh, but somewhere else".
 I wanted to keep much of the complexity of instancing at the parser and make minimal modifications to the ray tracer itself. Thus my architecture is as follows:
@@ -192,6 +194,28 @@ SquashedMeshInfo squash_mesh_info(int mesh_index, const Scene& scene) {
 
 In the eyes of the ray tracing part, all meshes and instances are now the same thing.
 I believe this architecture will make it much simpler in the future to add more data to meshes & mesh instances. 
+
+### Rendering Transformed Meshes
+
+Transforming all triangles of the mesh and then rebuilding the BVH is a huge waste of time. Instead, the cast ray is transformed into the local space of the mesh and BVH collision checks are performed there.
+
+```
+// Collision check
+glm::mat4 inverse_transformation = glm::inverse(mesh_info.transformation);
+Ray local_ray = Ray::transform(ray, inverse_transformation);
+const auto [t, tri] = bvh_get_collision(scene, mesh_info.bvh, local_ray); // use local_ray here
+```
+
+The t parameter returned can be used normally to get the hit point of the ray.
+However, there is a problem. The function bvh_get_collision returns the triangle hit but the normal is in local space. Thus, we need to transform the normal to world space:
+
+```cpp
+glm::mat4 inv = glm::inverse(mesh_info.transformation);
+glm::mat4 inv_transpose = glm::transpose(inv);
+norm = glm::mat3(inv_transpose) * local_norm;
+```
+
+The calculated value norm can finally be used for shading.
 
 
 ```xml
