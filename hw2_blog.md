@@ -231,3 +231,4 @@ I noticed two issues with my ray tracer which I hope to remedy by the next homew
 
 1. High poly meshes have small black 'dead pixels'.
 2. The camera is distorted in some inputs. Weird.
+3. Due to some assumptions in my parser, for the moment I could not run the David mesh so I could not generate the video :(
