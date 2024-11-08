@@ -48,6 +48,7 @@ BVHNode *setup_node(Scene &scene, int tri_start, int tri_count)
 ```
 
 Five pictures are worth five thousand words:
+
 <img src="https://github.com/user-attachments/assets/1d475466-a588-4413-b2af-ceaaf2594404" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-09">
 Level 0
 <img src="https://github.com/user-attachments/assets/6522acea-bbf1-45f9-b173-8d4ef2c2d389" width="50%" height="50%" alt="screenshot_2024-11-08_22-57-11">
