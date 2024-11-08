@@ -92,8 +92,7 @@ if (t_min > t)
 }
 
 // The new function iterating the BVH structure
-std::pair<float, const Triangle *> bvh_get_collision(const Scene &scene, const BVHNode *node, const Ray &ray)
-{
+std::pair<float, const Triangle *> bvh_get_collision(const Scene &scene, const BVHNode *node, const Ray &ray) {
 	const Triangle *ret = nullptr;
 
 	// This is the speedy part, if the ray does not intersect the bounding box
@@ -102,25 +101,20 @@ std::pair<float, const Triangle *> bvh_get_collision(const Scene &scene, const B
 		return std::pair<float, Triangle *>(INFINITY, NULL); 
 
 	// Otherwise we check if we can go into deeper nodes
-	if (node->tri_count > 0)
-	{
+	if (node->tri_count > 0) {
 		// We can't, iterate through all triangles in this node (in the cube)
 		float tmin = INFINITY;
-		for (int i = node->tri_start; i < node->tri_start + node->tri_count; i++)
-		{
+		for (int i = node->tri_start; i < node->tri_start + node->tri_count; i++) {
 			const Triangle &tri = scene.triangles[i];
 			float cur_result = triangle_get_collision(scene.vertex_data, tri, ray);
-			if (cur_result < tmin)
-			{
-				// std::cout << "BVHcol " << cur_result << " " << tri.v0_id << std::endl;
+			if (cur_result < tmin) {
 				tmin = cur_result;
 				ret = &scene.triangles[i];
 			}
 		}
 		return std::pair<float, const Triangle *>(tmin, ret);
 	}
-	else
-	{
+	else {
 		// We can, do it
 		auto left_res = bvh_get_collision(scene, node->left, ray);
 		auto right_res = bvh_get_collision(scene, node->right, ray);
