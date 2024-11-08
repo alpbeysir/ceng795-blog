@@ -126,6 +126,73 @@ std::pair<float, const Triangle *> bvh_get_collision(const Scene &scene, const B
 }
 ```
 
+This change shows performance improvements so big it does not even make sense to measure. Scenes over 10000 triangles become accessible for my ray tracer.
+
+## Multithreading
+
+Normally this may present a challenge but OpenMP comes to my rescue. This is my main loop sending rays for a camera:
+
+```cpp
+	#pragma omp parallel for // This OpenMP compiler directive here magically adds multithreading!
+	for (int i = 0; i < current_camera.image_width; i++)
+	{
+		for (int j = 0; j < current_camera.image_height; j++)
+		{
+			Ray ray = Ray::from_to(current_camera.position, plane_pixel_position(current_camera, i, j));
+			ray.direction = glm::normalize(ray.direction);
+			auto color = trace(scene, ray, scene.max_recursion_depth + 1, glm::vec4(1.0f), false, glm::vec4(0.0f));
+			image[i * current_camera.image_height + j] = color;
+		}
+	}
+```
+
+This achieved a moderate speedup for big scenes.
+
+## Instanced Rendering & Transformations
+
+Implementing this was not an algorithmic challenge, more a software enginnering one. A huge part of the code had to be refactored to accomodate this feature.
+Instancing is basically the input file saying: "I want another copy of this mesh, but somewhere else".
+I wanted to keep much of the complexity of instancing at the parser and make minimal modifications to the ray tracer itself. Thus my architecture is as follows:
+
+1. Start reading meshes and mesh instances from XML.
+2. Process and 'squash' all transformations into one glm::mat4 for each mesh.
+3. Create SquashedMeshInfo's from the flattened data.
+4. Run using an array of these 'mesh infos'
+
+SquashedMeshInfo represents all the information needed to render a mesh:
+```cpp
+struct SquashedMeshInfo {
+    glm::mat4 transformation; // composite transformation
+    int material_id;
+    BVHNode* bvh; // the root node of this mesh's BVH
+};
+```
+
+And this is the function that processes the original mesh data to create them:
+```cpp
+SquashedMeshInfo squash_mesh_info(int mesh_index, const Scene& scene) {
+    auto mesh = scene.meshes[mesh_index];
+    if (mesh.is_instance) {
+        auto child = squash_mesh_info(mesh.base_id, scene); // recurse to get details of base mesh
+        int material_id = mesh.material_id == -1 ? child.material_id : mesh.material_id; // material_id may be missing
+        glm::mat4 transformation;
+        if (mesh.reset_transform) { // take reset_transform into account
+            transformation = mesh.transformation;
+        }
+        else {
+            transformation = mesh.transformation * child.transformation;
+        }
+        return {transformation, material_id, child.bvh};
+    }
+    else {
+        return {mesh.transformation, mesh.material_id, mesh.bvh};
+    }
+}
+```
+
+In the eyes of the ray tracing part, all meshes and instances are now the same thing.
+I believe this architecture will make it much simpler in the future to add more data to meshes & mesh instances. 
+
 
 ```xml
 <NearPlane>-1 1 -1 1 20</NearPlane> // broken in spheres_mirror.xml
