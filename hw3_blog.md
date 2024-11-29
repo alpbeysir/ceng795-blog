@@ -35,3 +35,13 @@ image[i * current_camera.image_height + j] = color;
 
 The code above averages the obtained color value from the ray tracer, allowing us to use distribution/randomized effects.
 
+## Depth of Field
+
+Failed :( But I was able to do it after the deadline!
+
+## Area Light
+
+Although there are some issues with my implementation, the results mostly match the reference images. I have yet to discover my mistakes.
+
+<img src="https://github.com/user-attachments/assets/69f2bb3b-c264-46a0-b434-39915348df70" width="50%" height="50%">
+
