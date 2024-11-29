@@ -120,4 +120,6 @@ void apply_roughness(Ray &ray, const float roughness) { // this is called for ea
 
 <img src="https://github.com/user-attachments/assets/4045db0a-5602-4efb-a180-54cc6f01974b" width="50%" height="50%">
 
+## Additional Comments
 
+My raytracer has general issues like completely black outputs for certain scenes, no smooth normals, weird PNG output bugs, various parser bugs etc. I will work on fixing these and improving performance before starting the next homework. I believe this will be the best course of action for my sanity.
