@@ -43,5 +43,4 @@ Failed :( But I was able to do it after the deadline!
 
 Although there are some issues with my implementation, the results mostly match the reference images. I have yet to discover my mistakes.
 
-<img src="https://github.com/user-attachments/assets/69f2bb3b-c264-46a0-b434-39915348df70" width="50%" height="50%">
-
+<img src="https://github.com/user-attachments/assets/1bd46bc4-87f0-43c8-a8fc-403c27f10c94" width="50%" height="50%">
