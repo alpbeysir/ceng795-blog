@@ -103,4 +103,21 @@ for (const auto &mesh_info : scene.mesh_infos)
 
 Additionally, if a ray bounces the parameter is kept the same. This ensures consistency of reflections and actual objects. 
 
+## Roughness
+
+The roughness parameter of a material modifies the look of its reflections. Basically, a reflected ray is nudged in a bit of a different direction to give the effect of imperfections on the surface. The reflection direction is chosen randomly for each bounce so we need multisampling for this effect to look good.
+
+I implemented this by adding a member function to my Ray struct definition:
+
+```cpp
+void apply_roughness(Ray &ray, const float roughness) { // this is called for each reflected ray
+    if (roughness <= glm::epsilon<float>()) return; // check if roughnes value is too small to make an effect (roughness is set to zero when not given)
+
+    const auto [u, v] = get_onb(ray.direction); // computer orthonormal basis for ray direction
+    ray.direction = normalize(ray.direction + roughness * (random_uniform_float() * u + random_uniform_float() * v)); // nudge the ray a bit
+}
+```
+
+<img src="https://github.com/user-attachments/assets/4045db0a-5602-4efb-a180-54cc6f01974b" width="50%" height="50%">
+
 
