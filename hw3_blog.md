@@ -44,3 +44,63 @@ Failed :( But I was able to do it after the deadline!
 Although there are some issues with my implementation, the results mostly match the reference images. I have yet to discover my mistakes.
 
 <img src="https://github.com/user-attachments/assets/1bd46bc4-87f0-43c8-a8fc-403c27f10c94" width="50%" height="50%">
+
+Area light code is basically the same as point light code, except for one difference. In area lights, before doing the computation with the light position a random position in the area light's extent is taken instead of the light's actual position. 
+
+The code below is run for each ray that hits an object:
+
+```cpp
+for (const auto &area_light: scene.area_lights) { // iterate every area light in the scene
+    const auto [u, v] = get_onb(area_light.normal); // construct orthonormal basis of area light
+    const auto p = area_light.position + (u * random_uniform_float() + v * random_uniform_float());
+
+    // after we get the light position, the shading is exactly the same as point lights
+    Ray shadow_ray = Ray::from_to(hit_point + norm * scene.ray_epsilon, p, incoming_ray.t);
+    if (is_shadowed(shadow_ray, scene))
+        continue;
+
+    const auto l = shadow_ray.direction;
+    const auto r2 = dot(l, l);
+    const auto I = area_light.radiance * (area_light.size * area_light.size) / r2;
+
+    color += do_diffuse_shading(l, I, norm, material);
+    color += do_specular_shading(l, I, norm, material, incoming_ray);
+}
+```
+
+## Motion Blur
+
+Motion blur is implemented by adding a t parameter to the Ray struct:
+
+```cpp
+struct Ray
+{
+    glm::vec3 start;
+    glm::vec3 direction;
+    float t; // simulates the 'time' this ray came into the camera shutter
+
+    void apply_motion_blur(const glm::vec3& motion_vector) { // this function is used to transform a ray
+        start -= motion_vector * t;
+    }
+}
+```
+
+This parameter is set as a random float between 0 and 1 for each ray leaving the camera. When doing intersection checks against meshes and spheres, the parameter is used to transform the ray. This transformation of the ray simulates the movement of the object in the scene. 
+
+```cpp
+for (const auto &mesh_info : scene.mesh_infos)
+{
+    Ray local_ray = Ray::transform(ray, mesh_info.inverse_transformation);
+    local_ray.apply_motion_blur(mesh_info.motion_blur); // use the function defined above to 'move' the ray
+
+    // do the usual collision stuff
+    if (const auto [t, tri] = bvh_get_collision(scene, mesh_info.bvh, local_ray); t_min > t)
+    {
+        // ...    
+    }
+}
+```
+
+Additionally, if a ray bounces the parameter is kept the same. This ensures consistency of reflections and actual objects. 
+
+
