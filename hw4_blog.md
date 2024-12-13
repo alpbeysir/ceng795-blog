@@ -364,6 +364,9 @@ I wonder if instead of transforming everything about the object to world space I
 ![wood_box](https://github.com/user-attachments/assets/4c41335b-ffa9-414d-b5d0-55755af9ef73)
 ![galactica_static](https://github.com/user-attachments/assets/f2d1177a-7986-4c74-aa08-7273eb98415c)
 ![cube_wall_normal](https://github.com/user-attachments/assets/fdabbf25-e4ec-4861-ae7d-5f8add8bfad4)
+![sphere_nobump_bump](https://github.com/user-attachments/assets/997826b6-d4ab-4f62-8722-a59cc00157b4)
+![sphere_nearest_bilinear](https://github.com/user-attachments/assets/1882bb6b-d01a-4964-9f17-35ed7f434c30)
+![cube_cushion](https://github.com/user-attachments/assets/80b6907f-d95c-4c9b-b254-fb9b1621781f)
 
 
 
