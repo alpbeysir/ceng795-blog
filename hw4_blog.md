@@ -250,7 +250,9 @@ glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, con
 **Stupid mistakes**
 
 1. Initially for each call of sample_texture for an image texture I was copying the image data before accessing it. This obviously resulted in horrible performance. A short profiling session fixed it.
-2. For the bilinear implementation I forgot to add the bottom 2 pixels to the return value. For a while all bilinear textures looked smeared horizontally.
+2. For the bilinear implementation I forgot to add the bottom 2 pixels to the return value. For a while all bilinear textures looked smeared horizontally:
+![galactica_static_1](https://github.com/user-attachments/assets/8b93b4da-41c7-4bf3-8d20-43299879ab67)
+ 
 
 **Checkerboard?**
 
