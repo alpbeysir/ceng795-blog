@@ -309,8 +309,43 @@ The recalculation of local_hit_point for spheres is not good for performance. I 
 Additionally, a portion of the code for triangles can be precalculated because they do not depend on the hit point.
 - d00, d01, d11, denom
 
-### Normal Mapping    
+### Normal Mapping  
 
+Here I wonder if instead of transforming everything about the object to world space I should have transformed the light stuff to object space. Perhaps I can save on the last matrix multiplication.
+
+For spheres, tangent space is calculation on-the-fly as it depends on the exact hit point. This is because a sphere is not flat.
+
+```cpp
+const glm::vec3 normal_sample = sample_texture(texture_map, uv, hit_point) * 2.0f - glm::vec3(1.0f, 1.0f, 1.0f); // stupid mistake
+case GeometryType::Sphere: {
+        // calculate TBN matrix
+        auto local_hit_point = hit_info.point - hit_info.sphere->position;
+        local_hit_point /= hit_info.sphere->radius;
+        const auto t = glm::vec3(2 * pi * local_hit_point.z, 0, -2 * pi * local_hit_point.x);
+        const auto local_norm = (hit_info.local_hit_point - hit_info.sphere->position) / hit_info.sphere->radius;
+        const auto b = cross(t, local_norm); // instead of finding B similar to T, I used the original normal
+        const auto tbn = glm::mat3(t, b, local_norm);
+
+        // transform the sampled normal
+        const auto calculated_local_norm = tbn * normal_sample;
+        norm = /* transformed calculated_local_norm */;
+        break;
+    }
+    case GeometryType::Triangle: {
+        // pretty straightforward because TBN is precomputed
+        const auto calculated_local_norm = normalize(hit_info.triangle->tbn * normal_sample);
+        norm = /* transformed calculated_local_norm */;
+        break;
+    }
+```
+
+**Stupid mistakes**
+
+1. Initially instead of subtracting a vector of ones from the scaled normal texture sample I was adding it. This resulted in normals ranging from [1, 3] which resulted in:
+
+
+
+## Gallery
 
 
 
