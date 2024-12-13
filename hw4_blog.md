@@ -248,16 +248,16 @@ glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, con
 }
 ```
 
-** Stupid mistake **
+**Stupid mistake**
 
 Initially for each call of sample_texture for an image texture I was copying the image data before accessing it. This obviously resulted in horrible performance.
 A short profiling session later I fixed it.
 
-** Checkerboard? **
+**Checkerboard?**
 
 For the CHECKERBOARD texture type, I could not find any usages. All scenes use an image of a checkerboard. I probably missed something.
 
-** Perlin noise misunderstanding **
+**Perlin noise misunderstanding**
 
 Initially I thought that I was supposed to implement 2D perlin and sample it using UV coordinates. After doing this and seeing that the noise in the example outputs is 3D, I rewrote the perlin_noise function to take in a 3D vector and passed the hit_point to it.
 
