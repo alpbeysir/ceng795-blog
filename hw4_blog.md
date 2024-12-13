@@ -322,7 +322,7 @@ This part started out really rough:
 I used a new visual debugging strategy here where I set the object's color to the difference between the geometric normal and the computed texture map normal. Therefore, I could see how the normal was changed by the code and identify various errors.
 
 For spheres, tangent space is calculation on-the-fly as it depends on the exact hit point. This is because a sphere is not flat. 
-For triangles it is precomputed by the parser
+For triangles it is precomputed by the parser.
 
 ```cpp
 const glm::vec3 normal_sample = sample_texture(texture_map, uv, hit_point) * 2.0f - glm::vec3(1.0f, 1.0f, 1.0f); // stupid mistake
@@ -359,6 +359,11 @@ I wonder if instead of transforming everything about the object to world space I
 
 ## Gallery
 
+![cube_perlin](https://github.com/user-attachments/assets/96297700-e96b-4915-bacd-8ff9c064ef30)
+![brickwall_with_normalmap](https://github.com/user-attachments/assets/def34b14-ed6a-4295-aaf5-8a60bdb984d0)
+![wood_box](https://github.com/user-attachments/assets/4c41335b-ffa9-414d-b5d0-55755af9ef73)
+![galactica_static](https://github.com/user-attachments/assets/f2d1177a-7986-4c74-aa08-7273eb98415c)
+![cube_wall_normal](https://github.com/user-attachments/assets/fdabbf25-e4ec-4861-ae7d-5f8add8bfad4)
 
 
 
