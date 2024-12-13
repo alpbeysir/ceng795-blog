@@ -251,7 +251,7 @@ glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, con
 **Stupid mistake**
 
 Initially for each call of sample_texture for an image texture I was copying the image data before accessing it. This obviously resulted in horrible performance.
-A short profiling session later I fixed it.
+A short profiling session fixed it.
 
 **Checkerboard?**
 
