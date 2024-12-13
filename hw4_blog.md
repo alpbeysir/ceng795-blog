@@ -136,10 +136,12 @@ struct HitInfo {
 };
 ```
 
-(local_hit_point is broken for spheres. I do not know why, will investigate.)
+**Remarks**
+
+local_hit_point is broken for spheres. I do not know why, will investigate. It looks like this when used for UV calculation:
+![sphere_nobump_bump_2](https://github.com/user-attachments/assets/e2c0f726-228d-4485-b6ca-f0905a87b25d)
 
 The geometry/collisions code's job is the generate this struct for a given Ray. 
-
 
 ## The actual work
 
@@ -252,7 +254,7 @@ glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, con
 1. Initially for each call of sample_texture for an image texture I was copying the image data before accessing it. This obviously resulted in horrible performance. A short profiling session fixed it.
 2. For the bilinear implementation I forgot to add the bottom 2 pixels to the return value. For a while all bilinear textures looked smeared horizontally:
 ![galactica_static_1](https://github.com/user-attachments/assets/8b93b4da-41c7-4bf3-8d20-43299879ab67)
- 
+(The background is badly smeared)
 
 **Checkerboard?**
 
@@ -313,9 +315,14 @@ Additionally, a portion of the code for triangles can be precalculated because t
 
 ### Normal Mapping  
 
-Here I wonder if instead of transforming everything about the object to world space I should have transformed the light stuff to object space. Perhaps I can save on the last matrix multiplication.
+This part started out really rough:
 
-For spheres, tangent space is calculation on-the-fly as it depends on the exact hit point. This is because a sphere is not flat.
+![sphere_nobump_bump_1](https://github.com/user-attachments/assets/86a8c1ad-b08e-43b0-8bbe-89edf3a17796)
+
+I used a new visual debugging strategy here where I set the object's color to the difference between the geometric normal and the computed texture map normal. Therefore, I could see how the normal was changed by the code and identify various errors.
+
+For spheres, tangent space is calculation on-the-fly as it depends on the exact hit point. This is because a sphere is not flat. 
+For triangles it is precomputed by the parser
 
 ```cpp
 const glm::vec3 normal_sample = sample_texture(texture_map, uv, hit_point) * 2.0f - glm::vec3(1.0f, 1.0f, 1.0f); // stupid mistake
@@ -343,9 +350,12 @@ case GeometryType::Sphere: {
 
 **Stupid mistakes**
 
-1. Initially instead of subtracting a vector of ones from the scaled normal texture sample I was adding it. This resulted in normals ranging from [1, 3] which resulted in:
+1. Initially instead of subtracting a vector of ones from the scaled normal texture sample I was adding it. This resulted in always positive normals ranging from [1, 3] which resulted in:
+![sphere_normal_1](https://github.com/user-attachments/assets/b9bd90c1-a7e2-408f-ba82-ed4368eba1e5)
 
+**Remarks**
 
+I wonder if instead of transforming everything about the object to world space I should have transformed the light stuff to object space. Perhaps I can save on the last matrix multiplication.
 
 ## Gallery
 
