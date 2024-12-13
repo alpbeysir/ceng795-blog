@@ -109,7 +109,7 @@ while (element) {
 
 Basically everything is parsed with the same methodology. The parser code is finally clean.
 
-## Preparation for shading
+## Preparation
 
 Before I could perform the texture mapping computations during shading, I realized that I was lacking data at the shading step. I only had the hit point and the normal because that was all I needed before. The shading code did not even know if it was doing a triangle or a sphere. Much refactor needed. 
 
@@ -143,14 +143,14 @@ The geometry/collisions code's job is the generate this struct for a given Ray.
 
 ## The actual work
 
-The design here is simply to insert a piece of code right before every light in the scene is iterated. The code piece will replace/change the default values obtained from the material. Here is the pseudocode:
+The design here is simply to insert a piece of code right before every light in the scene is iterated. The code piece will replace/change the default values obtained from the material using the texture data. Here is the pseudocode of the shading logic and the inserted code:
 
 ```python
 do_shading(hit_info, incoming_ray):
     material = correct material from hit_info
     normal, diffuse, specular, ambient = initialize from material and object
 
-    # this part is the code piece
+    # this part is the inserted code
     for each texture on the object: 
         normal, diffuse, specular, ambient = run texture calculation
 
@@ -177,8 +177,6 @@ for (int i = 0; i < hit_info.texture_ids->size(); i++) { // for each texture on 
         case REPLACE_KS:
             specular = sample_texture(texture_map, uv, hit_point);
             break;
-        case REPLACE_BACKGROUND:
-            throw std::runtime_error("object can't have replace_background");
         case REPLACE_NORMAL: {
             // to be discussed later
         }
@@ -191,7 +189,7 @@ for (int i = 0; i < hit_info.texture_ids->size(); i++) { // for each texture on 
             specular = sample;
             ambient = sample;
             break;
-    }
+}
 ```
 
 Most of the texture types are straightforward and involve one or two computations. The only complicated one is REPLACE_NORMAL which implements normal mapping. I will describe my struggles with that later.
@@ -202,6 +200,8 @@ The code depends on two external functions that perform:
 2. get_uv: uv for sphere and triangle.
 
 ### sample_texture (Texture Sampling)
+
+Some portions are omitted for simplicity.
 
 ```cpp
 glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, const glm::vec3& position) {
@@ -224,7 +224,6 @@ glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, con
         }
         case PERLIN: {
             const glm::vec3 scaled_position = position * texture_map.perlin.noise_scale;
-
             float noise_value = 0.0f;
             float amplitude = 1.0f;
             float frequency = 1.0f;
@@ -236,9 +235,9 @@ glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, con
                 amplitude *= 0.5f;
                 frequency *= 2.0f;
             }
-
             noise_value /= total_amplitude;
-            noise_value = apply_perlin_conversion(noise_value, texture_map.perlin.noise_conversion);
+
+            noise_value = apply_perlin_conversion(noise_value, texture_map.perlin.noise_conversion); // don't forget to map the noise value!
             return glm::vec3(noise_value) * texture_map.perlin.bump_factor;
         }
         case CHECKERBOARD: { 
@@ -260,6 +259,66 @@ For the CHECKERBOARD texture type, I could not find any usages. All scenes use a
 **Perlin noise misunderstanding**
 
 Initially I thought that I was supposed to implement 2D perlin and sample it using UV coordinates. After doing this and seeing that the noise in the example outputs is 3D, I rewrote the perlin_noise function to take in a 3D vector and passed the hit_point to it.
+
+### get_uv (UV Calculation)
+
+This function is pretty straightforward but I wanted to make some comments about the issues I encountered: 
+(I omitted some parts for brevity)
+
+```cpp
+glm::vec2 get_uv(const Scene& scene, const HitInfo& hit_info) {
+    switch (hit_info.type) {
+        case GeometryType::Sphere: {
+            // for some reason hit_info.local_hit_point outputs literal garbage
+            // as a band-aid I recalculate it based on the global hit_point here
+            auto local_hit_point = hit_info.point - hit_info.sphere->position;
+            local_hit_point /= hit_info.sphere->radius;
+ 
+            // (same as slides)
+
+            return {u, v};
+        }
+        case GeometryType::Triangle: {
+            auto local_hit_point = hit_info.local_hit_point;
+            const Triangle& triangle = *hit_info.triangle;
+            const auto& vertex_data = scene.vertex_data;
+
+            const glm::vec3 v0 = vertex_data[triangle.v0_id].position;
+            const glm::vec2 uv0 = vertex_data[triangle.v0_id].tex_coord;
+            const glm::vec2 uv1 = vertex_data[triangle.v1_id].tex_coord;
+            const glm::vec2 uv2 = vertex_data[triangle.v2_id].tex_coord;
+
+            const glm::vec3 edge0 = triangle.edge0;
+            const glm::vec3 edge1 = triangle.edge1;
+            const glm::vec3 edge2 = local_hit_point - v0;
+
+            const float d00 = dot(edge0, edge0);
+            const float d01 = dot(edge0, edge1);
+            const float d11 = dot(edge1, edge1);
+            const float d20 = dot(edge2, edge0);
+            const float d21 = dot(edge2, edge1);
+
+            const float denom = d00 * d11 - d01 * d01;
+            const float v = (d11 * d20 - d01 * d21) / denom;
+            const float w = (d00 * d21 - d01 * d20) / denom;
+            const float u = 1.0f - v - w;
+
+            return u * uv0 + v * uv1 + w * uv2;
+        }
+        default:
+            throw std::runtime_error("this is impossible");
+    }
+}
+```
+
+**Remarks**
+
+The recalculation of local_hit_point for spheres is not good for performance. I will fix this.
+
+Additionally, a portion of the code for triangles can be precalculated because they do not depend on the hit point.
+
+- d00, d01, d10, d11, denom
+
 
 ### Normal Mapping
 
