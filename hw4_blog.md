@@ -154,7 +154,7 @@ do_shading(hit_info, incoming_ray):
     for each texture on the object: 
         normal, diffuse, specular, ambient = run texture calculation
 
-    color = black
+    color = ambient * scene ambient color
     color += for each point light, diffuse and specular
     color += for each area light, diffuse and specular
 
