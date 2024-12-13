@@ -292,13 +292,13 @@ glm::vec2 get_uv(const Scene& scene, const HitInfo& hit_info) {
             const glm::vec3 edge1 = triangle.edge1;
             const glm::vec3 edge2 = local_hit_point - v0;
 
-            const float d00 = dot(edge0, edge0);
-            const float d01 = dot(edge0, edge1);
-            const float d11 = dot(edge1, edge1);
+            const float d00 = dot(edge0, edge0); // can be precomputed
+            const float d01 = dot(edge0, edge1); // can be precomputed
+            const float d11 = dot(edge1, edge1); // can be precomputed
             const float d20 = dot(edge2, edge0);
             const float d21 = dot(edge2, edge1);
 
-            const float denom = d00 * d11 - d01 * d01;
+            const float denom = d00 * d11 - d01 * d01; // can be precomputed
             const float v = (d11 * d20 - d01 * d21) / denom;
             const float w = (d00 * d21 - d01 * d20) / denom;
             const float u = 1.0f - v - w;
@@ -316,9 +316,7 @@ glm::vec2 get_uv(const Scene& scene, const HitInfo& hit_info) {
 The recalculation of local_hit_point for spheres is not good for performance. I will fix this.
 
 Additionally, a portion of the code for triangles can be precalculated because they do not depend on the hit point.
-
-- d00, d01, d10, d11, denom
-
+- d00, d01, d11, denom
 
 ### Normal Mapping
 
