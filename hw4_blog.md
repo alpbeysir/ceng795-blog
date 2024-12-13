@@ -279,14 +279,7 @@ glm::vec2 get_uv(const Scene& scene, const HitInfo& hit_info) {
             return {u, v};
         }
         case GeometryType::Triangle: {
-            auto local_hit_point = hit_info.local_hit_point;
-            const Triangle& triangle = *hit_info.triangle;
-            const auto& vertex_data = scene.vertex_data;
-
-            const glm::vec3 v0 = vertex_data[triangle.v0_id].position;
-            const glm::vec2 uv0 = vertex_data[triangle.v0_id].tex_coord;
-            const glm::vec2 uv1 = vertex_data[triangle.v1_id].tex_coord;
-            const glm::vec2 uv2 = vertex_data[triangle.v2_id].tex_coord;
+            // ...
 
             const glm::vec3 edge0 = triangle.edge0;
             const glm::vec3 edge1 = triangle.edge1;
@@ -305,8 +298,6 @@ glm::vec2 get_uv(const Scene& scene, const HitInfo& hit_info) {
 
             return u * uv0 + v * uv1 + w * uv2;
         }
-        default:
-            throw std::runtime_error("this is impossible");
     }
 }
 ```
