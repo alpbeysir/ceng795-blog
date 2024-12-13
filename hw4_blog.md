@@ -107,7 +107,59 @@ while (element) {
 }
 ```
 
-Basically everything parsed with the same methodology. The parser code is finally clean.
+Basically everything is parsed with the same methodology. The parser code is finally clean.
+
+## Preparation for shading
+
+Before I could perform the texture mapping computations during shading, I realized that I was lacking data at the shading step. I only had the hit point and the normal because that was all I needed before. The shading code did not even know if it was doing a triangle or a sphere. Much refactor needed. 
+
+Instead of passing ad-hoc values to the shading and material/reflections portion of the code, I unified everything under a struct HitInfo. This had to be done eventually:
+
+```cpp
+struct HitInfo {
+    GeometryType type;
+    union {
+        const Sphere* sphere;
+        struct {
+            const Triangle* triangle;
+            const SquashedMeshInfo* mesh_info;
+        };
+    };
+    float t_min;
+    glm::vec3 point;
+
+    // TODO fix this for spheres
+    glm::vec3 local_hit_point;
+    glm::vec3 normal;
+    int material_id;
+    const std::vector<uint>* texture_ids;
+};
+```
+
+(local_hit_point is broken for spheres. I do not know why, will investigate.)
+
+The geometry/collisions code's job is the generate this struct for a given Ray. 
+
+
+## The actual work
+
+The design here is simply to insert a piece of code right before every light in the scene is iterated. The code piece will replace/change the default values obtained from the material. Here is the pseudocode:
+
+```python
+do_shading(hit_info, incoming_ray):
+    material = correct material from hit_info
+    normal, diffuse, specular, ambient = initialize from material
+
+    # this part is the code piece
+    for each texture on the object: 
+        normal, diffuse, specular, ambient = run texture calculation
+
+    color = black
+    color += for each point light, diffuse and specular
+    color += for each area light, diffuse and specular
+
+    return color
+```
 
 
 
