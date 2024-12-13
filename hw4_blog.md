@@ -148,7 +148,7 @@ The design here is simply to insert a piece of code right before every light in 
 ```python
 do_shading(hit_info, incoming_ray):
     material = correct material from hit_info
-    normal, diffuse, specular, ambient = initialize from material
+    normal, diffuse, specular, ambient = initialize from material and object
 
     # this part is the code piece
     for each texture on the object: 
@@ -160,6 +160,109 @@ do_shading(hit_info, incoming_ray):
 
     return color
 ```
+
+The critical code that calculates the new shading values:
+
+```cpp
+const auto uv = get_uv(scene, hit_info);
+for (int i = 0; i < hit_info.texture_ids->size(); i++) { // for each texture on the object
+    auto texture_id = hit_info.texture_ids->at(i);
+    switch (const auto& texture_map = scene.texture_maps[texture_id]; texture_map.decal_mode) { // look at the texture decal mode to decide what to replace/blend
+        case REPLACE_KD:
+            diffuse = sample_texture(texture_map, uv, hit_point);
+            break;
+        case BLEND_KD:
+            diffuse = (diffuse + sample_texture(texture_map, uv, hit_point)) / 2.0f;
+            break;
+        case REPLACE_KS:
+            specular = sample_texture(texture_map, uv, hit_point);
+            break;
+        case REPLACE_BACKGROUND:
+            throw std::runtime_error("object can't have replace_background");
+        case REPLACE_NORMAL: {
+            // to be discussed later
+        }
+        case BUMP_NORMAL:
+            // bump mapping did not make the deadline :(
+            break;
+        case REPLACE_ALL: // replace all components,
+            auto sample = sample_texture(texture_map, uv, hit_point);
+            diffuse = sample;
+            specular = sample;
+            ambient = sample;
+            break;
+    }
+```
+
+Most of the texture types are straightforward and involve one or two computations. The only complicated one is REPLACE_NORMAL which implements normal mapping. I will describe my struggles with that later.
+
+The code depends on two external functions that perform:
+
+1. sample_texture: nearest, bilinear, perlin, checkerboard sampling.
+2. get_uv: uv for sphere and triangle.
+
+### sample_texture (Texture Sampling)
+
+```cpp
+glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, const glm::vec3& position) {
+    switch (texture_map.type) { // look at the texture map type
+        case IMAGE: {
+            const auto& image_data = *texture_map.image.data; // copy mistake (&)
+            const float pixel_x = uv.x * width;
+            const float pixel_y = uv.y * height;
+            switch (texture_map.image.interpolation_mode) {
+                case NEAREST: {
+                    // return one sample from the image
+                }
+                case BILINEAR: {
+                    // return four averaged samples from the image
+                }
+                case TRILINEAR: {
+                    throw std::runtime_error("optional");
+                }
+            }
+        }
+        case PERLIN: {
+            const glm::vec3 scaled_position = position * texture_map.perlin.noise_scale;
+
+            float noise_value = 0.0f;
+            float amplitude = 1.0f;
+            float frequency = 1.0f;
+            float total_amplitude = 0.0f;
+
+            for (int i = 0; i < texture_map.perlin.num_octaves; ++i) {
+                noise_value += amplitude * perlin_noise(scaled_position * frequency);
+                total_amplitude += amplitude;
+                amplitude *= 0.5f;
+                frequency *= 2.0f;
+            }
+
+            noise_value /= total_amplitude;
+            noise_value = apply_perlin_conversion(noise_value, texture_map.perlin.noise_conversion);
+            return glm::vec3(noise_value) * texture_map.perlin.bump_factor;
+        }
+        case CHECKERBOARD: { 
+            // exactly the same as the PDF code
+        }
+    }
+}
+```
+
+** Stupid mistake **
+
+Initially for each call of sample_texture for an image texture I was copying the image data before accessing it. This obviously resulted in horrible performance.
+A short profiling session later I fixed it.
+
+** Checkerboard? **
+
+For the CHECKERBOARD texture type, I could not find any usages. All scenes use an image of a checkerboard. I probably missed something.
+
+** Perlin noise misunderstanding **
+
+Initially I thought that I was supposed to implement 2D perlin and sample it using UV coordinates. After doing this and seeing that the noise in the example outputs is 3D, I rewrote the perlin_noise function to take in a 3D vector and passed the hit_point to it.
+
+### Normal Mapping
+
 
 
 
