@@ -247,10 +247,10 @@ glm::vec3 sample_texture(const TextureMap& texture_map, const glm::vec2& uv, con
 }
 ```
 
-**Stupid mistake**
+**Stupid mistakes**
 
-Initially for each call of sample_texture for an image texture I was copying the image data before accessing it. This obviously resulted in horrible performance.
-A short profiling session fixed it.
+1. Initially for each call of sample_texture for an image texture I was copying the image data before accessing it. This obviously resulted in horrible performance. A short profiling session fixed it.
+2. For the bilinear implementation I forgot to add the bottom 2 pixels to the return value. For a while all bilinear textures looked smeared horizontally.
 
 **Checkerboard?**
 
@@ -309,7 +309,7 @@ The recalculation of local_hit_point for spheres is not good for performance. I 
 Additionally, a portion of the code for triangles can be precalculated because they do not depend on the hit point.
 - d00, d01, d11, denom
 
-### Normal Mapping
+### Normal Mapping    
 
 
 
