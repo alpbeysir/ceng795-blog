@@ -172,7 +172,7 @@ I had some additional time for extras.
 
 ## Profiling
 
-I used CLion IDE's built-in GUI profiler to create some flame graphs.
+I used CLion IDE's built-in GUI profiler to create some flame graphs. These show how much time is spent on which function during execution.
 
 bunny.xml (rendering time 70.45ms):
 ![image](https://github.com/user-attachments/assets/fe47c5ad-dac9-47e8-839d-460975b8a946)
