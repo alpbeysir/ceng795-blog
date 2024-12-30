@@ -165,8 +165,32 @@ current_pixel = pow(current_pixel, glm::vec3(1 / camera.tonemap_options.gamma));
 current_pixel = clamp(current_pixel, 0.0f, 1.0f); // the final tonemapped color (saved to png)
 ```
 
+# Bonuses
+
+This homework is a bit short & sweet, probably compensating for the next one :).
+I had some additional time for extras.
+
 ## Profiling
+
+I used CLion IDE's built-in GUI profiler to create some flame graphs.
+
+bunny.xml (rendering time 70.45ms):
+![image](https://github.com/user-attachments/assets/fe47c5ad-dac9-47e8-839d-460975b8a946)
+
+scene_pisa (audi) (rendering time 4123.11ms) (4 spp):
+![image](https://github.com/user-attachments/assets/2fffd7c3-534a-4998-8dc6-c72c6f1eccac)
+
+- An interesting visualization of how much time is spent in each level of the BVH tree.
+- As the poly count grows, the logarithmic complexity of BVH is apparent.
+- Also you can see how much time shading takes as more of the camera's vision is filled with objects.
+
+**Bad BVH example:**
+
+For some reason, the new dragon with colored spotlights scene breaks my BVH.
+The rendering takes forever because it basically works like naive iteration:
 ![image](https://github.com/user-attachments/assets/3d03b348-bb12-499e-9864-d5f14013be2d)
+
+I will need to go over this for the next homework.
 
 ## Denoising
 
