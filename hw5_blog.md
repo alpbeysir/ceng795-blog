@@ -92,8 +92,78 @@ One mistake here was one mentioned in the lectures, I forgot to multiply by the 
 16 samples per pixel:
 ![audi-tt-pisa](https://github.com/user-attachments/assets/04e4d7ef-e4c9-4ba9-a743-6d8489e01acd)
 
+### Background Sampling
+
+In some scenes, the background is also defined in terms of an environment map. I handled this by sampling when no geometry is hit:
+
+```cpp
+// .. geometry function call
+
+if (out_hit_info.type == GeometryType::Invalid) {
+    if (scene.environment_light.type != None) {
+        const auto environment_color = sample_environment_light(scene.environment_light, normalize(ray.direction)); // sample in the incoming ray direction
+        return environment_color;
+    }
+    return NO_HIT_COLOR; // for handling image backgrounds correctly
+}
+```
+
+![image](https://github.com/user-attachments/assets/8e26758d-91fa-4f97-8a15-9738b7ade654)
+
 ## Tonemapping
 
+I implemented mostly as described in the slides. One thing that came up was handling pitch black `(0, 0, 0)` pixels. They cause a problem because of the log luminance calculation:
+
+```cpp
+float sum_log_lum = 0;
+for (int i = 0; i < camera.image_height; i++) {
+    for (int j = 0; j < camera.image_width; j++) {
+        auto& current_pixel = image[i * camera.image_width + j];
+        auto lum = luminance(current_pixel);
+        sum_log_lum += logf(lum); // if lum is 0 here, everything explodes
+        luminances[i * camera.image_width + j] = lum;
+    }
+}
+```
+
+The below change fixes the problem but most likely there are much better solutions:
+
+```cpp
+if (lum < glm::epsilon<float>()) {
+    lum += glm::epsilon<float>();
+}
+else {
+    sum_log_lum += logf(lum);
+}
+```
+
+When handling the burn percent, the code takes the luminance fix into account by ignoring pixels smaller than epsilon:
+
+```cpp
+auto sorted_luminances = std::vector<float>();
+for (auto& luminance : luminances) {
+    if (luminance > glm::epsilon<float>()) { // ignore black pixels
+        sorted_luminances.push_back(luminance);
+    }
+}
+std::ranges::sort(sorted_luminances, std::greater());
+```
+
+After dealing with that, the actual tonemapping is straighforward:
+
+```cpp
+// for each pixel
+const auto& original_luminance = luminances[i * camera.image_width + j];
+const auto scaled_luminance = original_luminance * lum_scaler; // lum_scaler is obtained from the sum of log luminances and the key value
+
+const auto burnout_param = 1 + scaled_luminance / (l_white * l_white);
+const auto tonemapped_luminance = (scaled_luminance * burnout_param) / (1 + scaled_luminance);
+
+auto& current_pixel = image[i * camera.image_width + j];
+current_pixel = tonemapped_luminance * pow(current_pixel / original_luminance, glm::vec3(camera.tonemap_options.saturation));
+current_pixel = pow(current_pixel, glm::vec3(1 / camera.tonemap_options.gamma));
+current_pixel = clamp(current_pixel, 0.0f, 1.0f); // the final tonemapped color (saved to png)
+```
 
 ## Profiling
 ![image](https://github.com/user-attachments/assets/3d03b348-bb12-499e-9864-d5f14013be2d)
