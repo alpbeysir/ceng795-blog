@@ -1,4 +1,4 @@
-![audi-tt-pisa4_denoised](https://github.com/user-attachments/assets/5c9cdb05-f62c-4144-ab8c-62dc7b1a7342)# CENG795 Advanced Ray Tracing - Homework 5
+CENG795 Advanced Ray Tracing - Homework 5
 
 We are nearing the end of our ray tracing journey. This homework is about new light types and tonemapping.
 
