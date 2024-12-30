@@ -106,6 +106,20 @@ The implementation was much shorter that I expected.
 
 and 40 lines of C++ later I had the denoiser working:
 
+```cpp
+...
+
+filter.execute(); // run it
+
+// copy the image back from the denoiser buffer
+for (int i = 0; i < width * height; i += 3) {
+    auto& current_pixel = image[i];
+    current_pixel.r = output[i];
+    current_pixel.g = output[i + 1];
+    current_pixel.b = output[i + 2];
+}
+```
+
 scene_pisa.xml, 4 samples per pixel, no denoise:
 ![audi-tt-pisa4](https://github.com/user-attachments/assets/4815a942-e5e6-4f34-932a-86dcf9615409)
 
