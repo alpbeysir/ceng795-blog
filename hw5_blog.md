@@ -1,4 +1,4 @@
-CENG795 Advanced Ray Tracing - Homework 5
+# CENG795 Advanced Ray Tracing - Homework 5
 
 We are nearing the end of our ray tracing journey. This homework is about new light types and tonemapping.
 
