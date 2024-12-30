@@ -51,6 +51,8 @@ else {
 }
 ```
 
+![dragon_spot_light_msaa](https://github.com/user-attachments/assets/878cefaa-f2ca-4f79-9ca0-4acca6aa313f)
+
 One mistake that deserves an honorable mention is that I forgot to divide the angles by two, which resulted in twice as powerful spot lights.
 
 ## Environment Light
