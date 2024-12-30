@@ -228,4 +228,12 @@ The results are disappointing, it seems to rearrange the noise and doesn't reduc
 
 **I did a bit of research and this is probably because the denoiser needs additional data like albedo and normal maps to work better. I will work more on this.**
 
+## Gallery
+
+![stevefront](https://github.com/user-attachments/assets/4ef8bd01-0d04-4b5a-a911-07871c8509fa)
+
+![deadmau5](https://github.com/user-attachments/assets/481ac929-7f3d-4cde-95fc-ad31fd39da4e)
+
+![wine_glass](https://github.com/user-attachments/assets/91343ed7-3f72-487c-a384-62571a74c8c1)
+
 
