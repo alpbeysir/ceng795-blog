@@ -74,6 +74,7 @@ Normalized Modified Blinn-Phong:
 These two sections I handled together because path tracing does not work without object lights.
 
 At first the concept of path tracing seemed daunting and hard to approach. After all, it allows for cool and realistic effects that are hard to reproduce otherwise.
+I think that a good way to think about it is sampling an environment light, but rather than a projected texture color *the scene is used as a color value.*
 But the implementation is surprisingly simple:
 
 ```cpp
