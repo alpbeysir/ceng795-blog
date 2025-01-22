@@ -69,4 +69,48 @@ Normalized Modified Blinn-Phong:
 
 ![brdf_blinnphong_modified_normalized](https://github.com/user-attachments/assets/21ac92fb-6bcf-4ba3-bcf5-005c8fdea79c)
 
+## Path Tracing & Objects Lights
+
+These two sections I handled together because path tracing does not work without object lights.
+
+At first the concept of path tracing seemed daunting and hard to approach. After all, it allows for cool and realistic effects that are hard to reproduce otherwise.
+But the implementation is surprisingly simple:
+
+```cpp
+glm::vec4 trace(const Scene &scene,
+                const Camera& camera,
+                const Ray& ray, int depth,
+                glm::vec3 energy, bool is_inside,
+                const glm::vec3& absorption_coefficient) {
+
+  // ... geometry handling
+
+  // extra handling here
+  if (camera.renderer_type == PathTracer) {
+        const auto [dir, probability] = cosine_importance_sample(norm); // better than uniform sampling
+        Ray global_ray(hit_point + norm * scene.ray_epsilon, dir, ray.t);
+        const auto global_illumination_result = trace(scene, camera, global_ray, depth - 1, energy, is_inside, absorption_coefficient) / probability; // this is the important part
+        const auto global_illumination_color = glm::vec3(global_illumination_result);
+  
+        auto diffuse = material.diffuse;
+        auto specular = material.specular;
+        auto ambient = material.ambient;
+
+        if (!out_hit_info.texture_ids->empty()) {
+            apply_textures(scene, out_hit_info, hit_point, norm, diffuse, specular, ambient);
+        }
+
+        const auto brdf = do_brdf(material, diffuse, specular, normalize(global_ray.direction), norm, -normalize(ray.direction));
+        color += glm::vec4(global_illumination_color * brdf, 0.0f);
+    }
+  
+  // ... material & shading handling
+  
+  return color;
+}
+```
+
+
+
+
 
