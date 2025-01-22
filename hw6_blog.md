@@ -228,6 +228,7 @@ Ray shadow_ray = Ray::from_to(hit_point + norm * scene.ray_epsilon, glm::vec3(tr
 This seems to work well enough and is more performant than the original method. It probably introduces bias of some sort.
 
 cornellbox_jaroslav_glossy_area_sphere:
+
 ![cornellbox_jaroslav_glossy_area_sphere](https://github.com/user-attachments/assets/bfe8635a-463c-43eb-8f61-c2494061a371)
 
 **Mesh:** 
@@ -254,6 +255,7 @@ Ray shadow_ray = Ray::from_to(hit_point + norm * scene.ray_epsilon, glm::vec3(tr
 I believe that this is neither uniform nor correct. A better method may be 'projecting' the AABB of the mesh to the point's 'view'.
 
 cornellbox_jaroslav_glossy_area_small:
+
 ![cornellbox_jaroslav_glossy_area_small](https://github.com/user-attachments/assets/0481159b-d6d8-4469-98f2-97da2decd157)
 
 ### Importance Sampling
