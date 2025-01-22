@@ -67,3 +67,4 @@ Modified Blinn-Phong:
 Normalized Modified Blinn-Phong:
 ![brdf_blinnphong_modified_normalized](https://github.com/user-attachments/assets/21ac92fb-6bcf-4ba3-bcf5-005c8fdea79c)
 
+
