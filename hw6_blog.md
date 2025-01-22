@@ -69,13 +69,18 @@ Normalized Modified Blinn-Phong:
 
 ![brdf_blinnphong_modified_normalized](https://github.com/user-attachments/assets/21ac92fb-6bcf-4ba3-bcf5-005c8fdea79c)
 
-## Path Tracing & Objects Lights
+### Honorable Mentions
+
+While implementing BRDF support I accidentally ignored all texture data. This led to disappointing results in my path traced render of veach-ajar:
+
+![VeachAjar_path](https://github.com/user-attachments/assets/1f8321a7-a0e6-4c2c-bb08-8187a1427913)
+
+## Path Tracing & Object Lights
 
 These two sections I handled together because path tracing does not work without object lights.
 
 At first the concept of path tracing seemed daunting and hard to approach. After all, it allows for cool and realistic effects that are hard to reproduce otherwise.
-I think that a good way to think about it is sampling an environment light, but rather than a projected texture color *the scene is used as a color value.*
-But the implementation is surprisingly simple:
+I think that a good way to think about it is sampling an environment light, but rather than a projected texture color **the scene is used as a color value.**
 
 ```cpp
 glm::vec4 trace(const Scene &scene,
@@ -98,7 +103,7 @@ glm::vec4 trace(const Scene &scene,
         auto ambient = material.ambient;
 
         if (!out_hit_info.texture_ids->empty()) {
-            apply_textures(scene, out_hit_info, hit_point, norm, diffuse, specular, ambient);
+            apply_textures(scene, out_hit_info, hit_point, norm, diffuse, specular, ambient); // don't forget to apply the texture data
         }
 
         const auto brdf = do_brdf(material, diffuse, specular, normalize(global_ray.direction), norm, -normalize(ray.direction));
@@ -110,6 +115,64 @@ glm::vec4 trace(const Scene &scene,
   return color;
 }
 ```
+
+### Object Lights
+
+In standard path tracing, sampling object lights is literally one line of code:
+
+```cpp
+glm::vec4 trace(const Scene &scene,
+                const Camera& camera,
+                const Ray& ray, int depth,
+                glm::vec3 energy, bool is_inside,
+                const glm::vec3& absorption_coefficient) {
+
+  // ... geometry handling
+
+  // check if hit object is a light
+  if (bool hit_light = length2(out_hit_info.radiance) > epsilon) {
+      color += glm::vec4(out_hit_info.radiance, 0.0f);
+      color.w += 1.0f; // used for 0/1 heuristic
+  }
+
+  // ... material & shading handling
+  
+  return color;
+}
+```
+
+One caveat is that this will create a biased output when next event estimation is used. I dealt with that in the next section.
+
+### Next Event Estimation
+
+In effect, this was already implemented as direct lighting in our ray tracers. I just needed to disable it in case path tracing with no next event estimation was set for the camera.
+
+```cpp
+// trace.cpp, main routine
+
+bool should_skip_direct_light = camera.renderer_type == PathTracer && !camera.next_event_estimation;
+if (!is_inside && !should_skip_direct_light) { // this is added to disable it
+    const auto shading_result = do_shading(scene, out_hit_info, ray) * energy;
+    color += glm::vec4(shading_result, 0.0f);
+}
+```
+
+One problem here is if the path tracing routine hits a light and its radiance is added to the color, the `do_shading` function will try to sample the same light again. This will cause bias.
+I devised a weird way to fix this. I did not want to return an extra value from my trace function and use if statements to keep track of light hits.
+Instead of returning `glm::vec3` from the trace function like normal, I changed it to `glm::vec4`. The `w` parameter tracks the number of lights hit. 
+
+```cpp
+// in trace.cpp, path tracing
+const auto global_illumination_result = trace(scene, camera, global_ray, depth - 1, energy, is_inside, absorption_coefficient) / probability;
+const auto global_illumination_color = glm::vec3(global_illumination_result);
+
+bool should_discard = global_illumination_result.w > epsilon && camera.next_event_estimation; // if the 'number of lights sampled' is greater than zero and we have direct lighting
+if (!should_discard) { // may discard the sample
+    // .. apply path tracing to color
+}
+```
+
+
 
 
 
