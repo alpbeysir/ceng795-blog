@@ -268,6 +268,10 @@ I lost hours thinking I had gotten path tracing wrong when all along it was just
 
 ## Gallery
 
+![cornellbox_jaroslav_glossy_area_ellipsoid](https://github.com/user-attachments/assets/33171fc3-f16c-4ee9-9603-1054684f4132)
+
+![cornellbox_jaroslav_glossy](https://github.com/user-attachments/assets/9030b115-7d08-4447-80bd-740693eb1add)
+
 ![VeachAjar_path](https://github.com/user-attachments/assets/69983abc-b733-4fff-9d0d-8af9d9421239)
 
 ![scienceTree_glass](https://github.com/user-attachments/assets/9cc7edaf-e653-4d82-948a-51476181b709)
