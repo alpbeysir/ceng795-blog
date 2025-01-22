@@ -205,8 +205,11 @@ else if (material.type == DIELECTRIC) {
         color += reflection_color;
     }
 }
-
 ```
+
+glass_importance_nee_weighted_revised:
+
+![glass_importance_nee_weighted_revised](https://github.com/user-attachments/assets/b37ff1d8-3c4e-4060-80c3-cf4dad1efe56)
 
 ### Importance Sampling
 
