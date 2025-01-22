@@ -272,6 +272,7 @@ I lost hours thinking I had gotten path tracing wrong when all along it was just
 
 ![scienceTree_glass](https://github.com/user-attachments/assets/9cc7edaf-e653-4d82-948a-51476181b709)
 
+![stevefront](https://github.com/user-attachments/assets/1bf0ce91-0bb6-4bdf-824b-367b0fa609b8)
 
 
 
