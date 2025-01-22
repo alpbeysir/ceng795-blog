@@ -94,19 +94,18 @@ glm::vec4 trace(const Scene &scene,
   // extra handling here
   if (camera.renderer_type == PathTracer) {
         const auto [dir, probability] = cosine_importance_sample(norm); // better than uniform sampling
-        Ray global_ray(hit_point + norm * scene.ray_epsilon, dir, ray.t);
-        const auto global_illumination_result = trace(scene, camera, global_ray, depth - 1, energy, is_inside, absorption_coefficient) / probability; // this is the important part
-        const auto global_illumination_color = glm::vec3(global_illumination_result);
+        Ray global_ray(...);
+        const auto global_illumination_result = trace(...); // this is the important part
   
         auto diffuse = material.diffuse;
         auto specular = material.specular;
         auto ambient = material.ambient;
 
         if (!out_hit_info.texture_ids->empty()) {
-            apply_textures(scene, out_hit_info, hit_point, norm, diffuse, specular, ambient); // don't forget to apply the texture data
+            apply_textures(...); // don't forget to apply the texture data
         }
 
-        const auto brdf = do_brdf(material, diffuse, specular, normalize(global_ray.direction), norm, -normalize(ray.direction));
+        const auto brdf = do_brdf(...);
         color += glm::vec4(global_illumination_color * brdf, 0.0f);
     }
   
@@ -163,10 +162,9 @@ Instead of returning `glm::vec3` from the trace function like normal, I changed 
 
 ```cpp
 // in trace.cpp, path tracing
-const auto global_illumination_result = trace(scene, camera, global_ray, depth - 1, energy, is_inside, absorption_coefficient) / probability;
-const auto global_illumination_color = glm::vec3(global_illumination_result);
-
-bool should_discard = global_illumination_result.w > epsilon && camera.next_event_estimation; // if the 'number of lights sampled' is greater than zero and we have direct lighting
+const auto global_illumination_result = trace(...)
+// if the 'number of lights sampled' is greater than zero and we have direct lighting
+bool should_discard = global_illumination_result.w > epsilon && camera.next_event_estimation; 
 if (!should_discard) { // may discard the sample
     // .. apply path tracing to color
 }
