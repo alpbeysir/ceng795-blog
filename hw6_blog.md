@@ -62,9 +62,11 @@ Unlike before, as a small optimization I did not pass `I` as a parameter because
 ### Results
 
 Modified Blinn-Phong:
+
 ![brdf_blinnphong_modified](https://github.com/user-attachments/assets/6f9df9c0-61d8-471c-a77d-09634d67bfd9)
 
 Normalized Modified Blinn-Phong:
+
 ![brdf_blinnphong_modified_normalized](https://github.com/user-attachments/assets/21ac92fb-6bcf-4ba3-bcf5-005c8fdea79c)
 
 
