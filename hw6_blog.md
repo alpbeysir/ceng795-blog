@@ -170,6 +170,14 @@ if (!should_discard) { // may discard the sample
 }
 ```
 
+### Importance Sampling
+
+This code is pretty much exactly as described in the slides but I wanted to touch on a **crucial** mistake that I keep making.
+
+- Multiplying by the probability instead of dividing.
+
+I lost hours thinking I had gotten path tracing wrong when all along it was just this.
+
 
 
 
