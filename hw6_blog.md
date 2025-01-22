@@ -115,6 +115,10 @@ glm::vec4 trace(const Scene &scene,
 }
 ```
 
+diffuse_test:
+
+![diffuse_test](https://github.com/user-attachments/assets/d7aa1d2d-94a3-4c8f-a063-8ab4d46d2686)
+
 ### Object Lights
 
 In standard path tracing, sampling object lights is literally one line of code:
