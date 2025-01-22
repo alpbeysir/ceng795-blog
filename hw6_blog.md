@@ -174,6 +174,40 @@ if (!should_discard) { // may discard the sample
 }
 ```
 
+#### Caustics
+
+The avid reader may ask how this deals with caustics. I just reset the 'light counter' if we refract from a dielectric:
+
+```cpp
+// trace.cpp, material handling
+
+if (material.type == MIRROR) {
+    // .. mirror
+}
+else if (material.type == DIELECTRIC) {
+    if (inside_sqrt > 0) {
+        // .. math
+
+        auto reflection_color = trace(...);
+        color += reflection_color;
+
+        auto refraction_color = trace(...);
+        color += refraction_color;
+
+        // caustics
+        color.w = 0.0f;
+    } else {
+        // total internal reflection
+
+        // .. math
+                
+        auto reflection_color = trace(...);
+        color += reflection_color;
+    }
+}
+
+```
+
 ### Importance Sampling
 
 This code is pretty much exactly as described in the slides but I wanted to touch on a **crucial** mistake that I keep making.
