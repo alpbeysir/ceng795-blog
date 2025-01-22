@@ -211,6 +211,51 @@ glass_importance_nee_weighted_revised:
 
 ![glass_importance_nee_weighted_revised](https://github.com/user-attachments/assets/b37ff1d8-3c4e-4060-80c3-cf4dad1efe56)
 
+#### Object Lights (NEE)
+
+*I think this is the weakest part of my implementation. It does not exactly match the ground truth outputs.*
+
+To make the last step of my ray tracing journey more exciting, I had the brilliant idea of conjuring up two new methods of sampling object lights:
+
+**Sphere:**
+
+```cpp
+const auto local_point_on_sphere = sphere.position + glm::sphericalRand(sphere.radius + scene.ray_epsilon); // pick random point on sphere's surface
+const auto transformed = sphere.transformation * glm::vec4(local_point_on_sphere, 1.0f); // transform it to global space
+Ray shadow_ray = Ray::from_to(hit_point + norm * scene.ray_epsilon, glm::vec3(transformed), incoming_ray.t); // send ray towards that point
+```
+
+This seems to work well enough and is more performant than the original method. It probably introduces bias of some sort.
+
+cornellbox_jaroslav_glossy_area_sphere:
+![cornellbox_jaroslav_glossy_area_sphere](https://github.com/user-attachments/assets/bfe8635a-463c-43eb-8f61-c2494061a371)
+
+**Mesh:** 
+
+Since the sphere method works, I tried to adapt it to meshes with questionable results:
+
+```cpp
+const auto [bb_min, bb_max] = get_mesh_aabb(mesh_info);
+const int face = static_cast<int>(random_uniform_float01() * 6); // pick random face
+const float u = random_uniform_float01();
+const float v = random_uniform_float01(); / pick random quad face coordinates
+
+glm::vec3 point = bb_min;
+
+switch (face) {
+    // pick point on the selected random face
+}
+
+const auto local_point_on_box = point;
+const auto transformed = mesh_info.transformation * glm::vec4(local_point_on_box, 1.0f); // transform to global space
+Ray shadow_ray = Ray::from_to(hit_point + norm * scene.ray_epsilon, glm::vec3(transformed), incoming_ray.t); // send ray
+```
+
+I believe that this is neither uniform nor correct. A better method may be 'projecting' the AABB of the mesh to the point's 'view'.
+
+cornellbox_jaroslav_glossy_area_small:
+![cornellbox_jaroslav_glossy_area_small](https://github.com/user-attachments/assets/0481159b-d6d8-4469-98f2-97da2decd157)
+
 ### Importance Sampling
 
 This code is pretty much exactly as described in the slides but I wanted to touch on a **crucial** mistake that I keep making.
