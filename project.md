@@ -97,7 +97,15 @@ Initialization time scaled linearly with the number of regions, as expected. Bec
 `closeup.xml` has 4 regions defined, amounting to a total of `129,010,458` blocks. This takes ~20 seconds to load. 
 The efficiency of the SVO algorithm is demonstrated here, even with +100 million voxels the render time is still manageable.
 
+We also ran profiling while rendering the `closeup.xml` scene:
+
 ![image](https://github.com/user-attachments/assets/a5930521-7570-42f7-a80a-eece17925ad9)
+
+The graph shows how much time each function took to execute at each recursion depth. 
+The first huge hump is the SVO ray intersection function, the second is the SVO construction and the rest is the world loading.
+A keen observer will notice the `log8` scaling of the SVO functions.
+
+
 
 
 
