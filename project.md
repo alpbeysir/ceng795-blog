@@ -80,6 +80,7 @@ else if (normal.y > 0.0f) {
 else {
     dir = TextureDirection::Side;
 }
+const auto image = images.at(dir).get(); // determine which image to sample
 ```
 
 
