@@ -83,4 +83,15 @@ else {
 const auto image = images.at(dir).get(); // determine which image to sample
 ```
 
+The obtained image is then sampled like usual.
+
+### Performance
+
+| Scene          | Init Time      | Render Time    |
+|----------------|----------------|----------------|
+| test.xml       | 0.50s          | 3.74s          |
+| big_dragon.xml | 23.08s         | 32.98s         |
+| closeup.xml    | 19.88s         | 41.18s         |
+
+
 
