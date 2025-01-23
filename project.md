@@ -36,6 +36,8 @@ for (int i = 0; i < 1024; i++) { // we iterate each chunk in the region
         if (chunk.sections[j] == nullptr)
             continue;
 
+        const auto palette = chunk.palette[j]; // for getting block type
+
         for (int x = 0; x < 16; x++) {
             for (int y = 0; y < 16; y++) {
                 for (int z = 0; z < 16; z++) {
@@ -51,5 +53,33 @@ enkiRegionFileFreeAllocations(&region_file);
 fclose(fp);
 ```
 
+Each chunk also has a palette. This basically defines which voxels are mapped to which materials. This will later be useful in the materials section.
+
 #### Materials & Textures
+
+To get the voxels to look as they do in-game, we needed to extract the original texture data from the game. This is stored as JSON metadata and PNG images.
+Since these are very game specific, I will choose to not go into much detail. Briefly, the metadata is keyed by tags like `minecraft:stone`, `minecraft:grass_block`. These tags can be extracted from the aforementioned chunk palette. For each metadata key, a standard diffuse material is generated.
+The JSON file corresponding to the tag is used to read the correct `.png` files. Because **different sides can have different textures**, multiple images may
+be assigned to the same material. 
+
+Since the voxels don't have a true UV definition, a technique similar to triplanar rendering is used.
+
+Using the voxel normal from the hit point data, we can determine which side of the voxel is hit:
+
+```cpp
+TextureDirection dir;
+if (images.contains(TextureDirection::All)) { // exception for voxels that have all sides the same
+    dir = TextureDirection::All;
+}
+else if (normal.y < 0.0f) {
+    dir = TextureDirection::Bottom;
+}
+else if (normal.y > 0.0f) {
+    dir = TextureDirection::Top;
+}
+else {
+    dir = TextureDirection::Side;
+}
+```
+
 
