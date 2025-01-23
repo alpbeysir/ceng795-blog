@@ -97,6 +97,10 @@ Initialization time scaled linearly with the number of regions, as expected. Bec
 `closeup.xml` has 4 regions defined, amounting to a total of `129,010,458` blocks. This takes ~20 seconds to load. 
 The efficiency of the SVO algorithm is demonstrated here, even with +100 million voxels the render time is still manageable.
 
+![image](https://github.com/user-attachments/assets/a5930521-7570-42f7-a80a-eece17925ad9)
+
+
+
 
 
 
