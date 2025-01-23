@@ -94,7 +94,9 @@ The obtained image is then sampled like usual.
 | closeup.xml    | 19.88s         | 41.18s         |
 
 Initialization time scaled linearly with the number of regions, as expected. Because of the nature of Minecraft's world files, the loading process is a bit inefficient.
-`closeup.xml` has 4 regions defined, amounting to a total of `129,010,458` blocks. This takes ~20 seconds to load.
+`closeup.xml` has 4 regions defined, amounting to a total of `129,010,458` blocks. This takes ~20 seconds to load. 
+The efficiency of the SVO algorithm is demonstrated here, even with +100 million voxels the render time is still manageable.
+
 
 
 
