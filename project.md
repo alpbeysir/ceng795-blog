@@ -93,5 +93,8 @@ The obtained image is then sampled like usual.
 | big_dragon.xml | 23.08s         | 32.98s         |
 | closeup.xml    | 19.88s         | 41.18s         |
 
+Initialization time scaled linearly with the number of regions, as expected. Because of the nature of Minecraft's world files, the loading process is a bit inefficient.
+`closeup.xml` has 4 regions defined, amounting to a total of `129,010,458` blocks. This takes ~20 seconds to load.
+
 
 
